@@ -263,6 +263,11 @@ double CONTROLLER_realize(int i){
         return 0;
     }
 
+    if (i == 0){
+        printf("scenario: %s\n", scenario);
+        printf("controller.gamma: %f\n", controller.gamma);
+    }
+
     // calculate the Cholesky factorization
     for (int j = 0; j < n_joint; j++){
         for (int k = 0; k < n_joint; k++){
@@ -272,6 +277,14 @@ double CONTROLLER_realize(int i){
     for (int j = 0; j < n_joint; j++){
         for (int k = 0; k < n_joint; k++){
             controller.R1[j][k] = 1 / sqrt(1 / controller.beta - 1 / pow(controller.gamma, 2)) * (j == k);
+        }
+    }
+
+    if (i == 0){
+        for (int j = 0; j < n_joint; j++) {
+            for (int k = 0; k < n_joint; k++) {
+                printf("controller.R[%d][%d] = %f\n", j, k, controller.R[j][k]);
+            }
         }
     }
 
@@ -310,6 +323,14 @@ double CONTROLLER_realize(int i){
         }
     }
 
+    if (i == 0){
+        for (int j = 0; j < n_joint; j++) {
+            for (int k = 0; k < n_joint; k++) {
+                printf("controller.Q[%d][%d] = %f\n", j, k, controller.Q[j][k]);
+            }
+        }
+    }
+
     // solution matrix of Riccati-like algebraic equation (43) T0, defined in Eq. 10
     for (int j = 0; j < n_joint; j++){
         for (int k = 0; k < n_joint; k++){
@@ -335,6 +356,14 @@ double CONTROLLER_realize(int i){
             controller.T0[j][k + n_joint] = controller.T12[j][k];
             controller.T0[j + n_joint][k] = controller.T21[j][k];
             controller.T0[j + n_joint][k + n_joint] = controller.T22[j][k];
+        }
+    }
+
+    if (i == 0){
+        for (int j = 0; j < n_joint; j++) {
+            for (int k = 0; k < n_joint; k++) {
+                printf("controller.T0[%d][%d] = %f\n", j, k, controller.T0[j][k]);
+            }
         }
     }
 
@@ -545,6 +574,7 @@ int main(){
     PLANT_init();      // initialize plant parameter
 
     for (int i = 0; i < ARRAY_SIZE; i++){
+    // for (int i = 0; i < 5; i++){
         double time = i * Ts + t0;
         printf("time at step %d: %f\n", i, time);
         CONTROLLER_realize(i);
